@@ -1,0 +1,61 @@
+# Build spike create release
+
+name: Build spike
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+      - cron: 30 1 * * *
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      
+      - name: Build spike
+        run: |
+          root_directory=$(pwd)
+          mkdir -p $root_directory/compress_files
+
+          sudo apt install device-tree-compiler
+          git submodule update --init --recursive
+          cd riscv-isa-sim/ci-tests
+          sh build-spike
+          build/install/bin/spike -h
+          
+          tar -czvf $root_directory/compress_files/ubuntu_x86_spike.tar.gz build/install/bin/spike
+          ls $root_directory/compress_files
+
+      - name: Build pk
+        run: |
+          root_directory=$(pwd)
+          
+          wget https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2023.10.18/riscv64-elf-ubuntu-20.04-gcc-nightly-2023.10.18-nightly.tar.gz
+          sudo mkdir /opt/riscv
+          sudo tar -xzf riscv64-elf-ubuntu-20.04-gcc-nightly-2023.10.18-nightly.tar.gz -C /opt/
+          export PATH=$PATH:/opt/riscv/bin
+          git submodule update --init --recursive
+          cd riscv-pk
+          mkdir build
+          cd build
+          ../configure --prefix=/opt/riscv --host=riscv64-unknown-elf --with-arch=rv64imafdc_zifencei
+          make install
+          
+          tar -czvf $root_directory/compress_files/ubuntu_x86_pk.tar.gz /opt/riscv/riscv64-unknown-elf/bin/pk
+      
+      - name: Creat release and Upload
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            compress_files/*.tar.gz
