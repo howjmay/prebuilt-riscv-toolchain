@@ -30,8 +30,8 @@ jobs:
           sh build-spike
           build/install/bin/spike -h
           
-          tar -czvf $root_directory/compress_files/ubuntu_x86_spike.tar.gz build/install/bin/spike
-          ls $root_directory/compress_files
+          cp build/install/bin/spike spike
+          tar -czvf $root_directory/compress_files/ubuntu_x86_spike.tar.gz spike
 
       - name: Build pk
         run: |
@@ -47,8 +47,9 @@ jobs:
           cd build
           ../configure --prefix=/opt/riscv --host=riscv64-unknown-elf --with-arch=rv64imafdc_zifencei
           make install
-          
-          tar -czvf $root_directory/compress_files/ubuntu_x86_pk.tar.gz /opt/riscv/riscv64-unknown-elf/bin/pk
+
+          cp /opt/riscv/riscv64-unknown-elf/bin/pk pk
+          tar -czvf $root_directory/compress_files/ubuntu_x86_pk.tar.gz pk
       
       - name: Creat release and Upload
         uses: "marvinpinto/action-automatic-releases@latest"
@@ -56,6 +57,6 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
           prerelease: true
-          title: "Development Build"
+          title: "RISCV Spike prebuild binary"
           files: |
             compress_files/*.tar.gz
