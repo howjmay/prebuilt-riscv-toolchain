@@ -4,11 +4,10 @@ name: Build spike
 
 on:
   push:
-    branches:
-      - main
-  # workflow_dispatch:
-  # schedule:
-  #     - cron: 30 1 * * *
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0' # Runs every Sunday at 00:00 UTC
 
 jobs:
   build:
@@ -19,6 +18,11 @@ jobs:
         with:
           submodules: true
       
+      - name: Set DATESTAMP
+        run: |
+          DATESTAMP="$(date --utc '+%Y.%m.%d')"
+          echo "DATESTAMP=${DATESTAMP}" >> $GITHUB_ENV
+
       - name: Build GNU toolchain
         run: |
           root_directory=$(pwd)
@@ -73,8 +77,8 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
+          automatic_release_tag: "weekly-${{ env.DATESTAMP }}"
           prerelease: true
-          title: "RISCV Spike prebuild binary"
+          title: "RISCV weekly prebuild toolchain binary weekly-${{ env.DATESTAMP }}"
           files: |
             compress_files/*.tar.gz
