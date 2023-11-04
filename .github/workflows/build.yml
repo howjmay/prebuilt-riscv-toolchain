@@ -77,8 +77,8 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "weekly-${{ env.DATESTAMP }}"
+          automatic_release_tag: "weekly-x86-ubuntu-${{ env.DATESTAMP }}"
           prerelease: true
-          title: "RISCV weekly prebuild toolchain binary weekly-${{ env.DATESTAMP }}"
+          title: "weekly-x86-ubuntu-${{ env.DATESTAMP }}"
           files: |
             compress_files/*.tar.gz

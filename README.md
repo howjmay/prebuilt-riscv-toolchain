@@ -1,6 +1,6 @@
 # prebuilt-riscv-toolchain
 
-The release from the official repository [riscv-gnu-toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain) has a lack of several necessary features. Therefore, this repository provides a latest prebuilt RISCV GNU toolchain binary. This can help developers to set up CI (e.g. GitHub Action).
+The release from the official repository [riscv-gnu-toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain) has a lack of several necessary features. Therefore, this repository provides a latest prebuilt RISCV GNU toolchain binary on `x86` architecture for Linux. This can help developers to set up CI (e.g. GitHub Action).
 
 This repository includes the cross compiled toolchains and qemu simulators.
 
