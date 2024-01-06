@@ -5,6 +5,8 @@ name: Build spike
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main, develop]
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0' # Runs every Sunday at 00:00 UTC
@@ -35,7 +37,7 @@ jobs:
           git submodule update --depth 1 --init --recursive binutils
           git clone --depth 1 https://github.com/gcc-mirror/gcc.git gcc-master
           toolchain_root_directory=$(pwd)
-          ./configure --prefix=/opt/riscv --enable-multilib --with-gcc-src=$toolchain_root_directory/gcc-master
+          ./configure --prefix=/opt/riscv --with-gcc-src=$toolchain_root_directory/gcc-master --disable-gdb --with-cmodel=medany
           sudo make
           sudo make build-sim SIM=qemu
           
@@ -77,8 +79,8 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "weekly-${{ env.DATESTAMP }}"
+          automatic_release_tag: "weekly-x86-ubuntu-${{ env.DATESTAMP }}"
           prerelease: true
-          title: "RISCV weekly prebuild toolchain binary weekly-${{ env.DATESTAMP }}"
+          title: "weekly-x86-ubuntu-${{ env.DATESTAMP }}"
           files: |
             compress_files/*.tar.gz
